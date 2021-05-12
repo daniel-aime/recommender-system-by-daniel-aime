@@ -1,5 +1,5 @@
 from DatabaseAccess import Database
-from DataFeaturing import setInDataFrame
+from DataFeaturing import *
 
 
 class ImportDatasetOnNeo4j:
@@ -11,6 +11,16 @@ class ImportDatasetOnNeo4j:
     @classmethod
     def createSession(cls):
         return cls.connection.session()
+
+
+    @classmethod
+    def getAllProductNoRating(cls):
+        query = """
+                    MATCH (m:Movie) WHERE NOT (m)<-[:REVIEWED]-()
+                    RETURN ID(m)
+                """
+        cls.__session__ = cls.createSession()
+        return setInDict(cls.__session__.run(query))
 
 
     @classmethod
@@ -30,3 +40,6 @@ class ImportDatasetOnNeo4j:
                 """
         cls.__session__ = cls.createSession()
         return setInDataFrame(cls.__session__.run(query))
+
+test = ImportDatasetOnNeo4j.getAllProductNoRating()
+print(test)
