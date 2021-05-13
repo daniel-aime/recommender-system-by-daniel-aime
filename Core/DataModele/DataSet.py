@@ -1,12 +1,22 @@
-from DatabaseAccess import Database
-from DataFeaturing import *
+from .DatabaseAccess import Database
+from .DataFeaturing import *
 
 
 class ImportDatasetOnNeo4j:
+    """
+        Class singleton qui injecte les données dans le database neo4j
+    """
     connection = Database.getConnection(uri="bolt://localhost:7687", user="test_user", password="root")
     __session__ = None
-    def __init__(self):
-        pass
+    __instance__ = None
+
+    @staticmethod
+    def getSingletonInstance():
+        if ImportDatasetOnNeo4j.__instance__ is None:
+            ImportDatasetOnNeo4j.__instance__ =  ImportDatasetOnNeo4j()
+        return ImportDatasetOnNeo4j.__instance__
+
+
 
     @classmethod
     def createSession(cls):
@@ -20,7 +30,7 @@ class ImportDatasetOnNeo4j:
                     RETURN ID(m)
                 """
         cls.__session__ = cls.createSession()
-        return setInDict(cls.__session__.run(query))
+        return setInList(cls.__session__.run(query))
 
 
     @classmethod
@@ -40,6 +50,3 @@ class ImportDatasetOnNeo4j:
                 """
         cls.__session__ = cls.createSession()
         return setInDataFrame(cls.__session__.run(query))
-
-test = ImportDatasetOnNeo4j.getAllProductNoRating()
-print(test)
