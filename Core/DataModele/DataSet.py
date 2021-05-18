@@ -24,23 +24,23 @@ class ImportDatasetOnNeo4j:
 
 
     @classmethod
-    def getAllProductNoRating(cls):
+    def getAllProduct(cls):
         query = """
-                    MATCH (m:Movie) WHERE NOT (m)<-[:REVIEWED]-()
-                    RETURN ID(m)
+                    MATCH (m:Movie)
+                    RETURN {movieId:ID(m)}
                 """
         cls.__session__ = cls.createSession()
-        return setInList(cls.__session__.run(query))
+        return setInList(results=cls.__session__.run(query).values(), item="movieId")
 
 
     @classmethod
-    def getUserNoRatingProduct(cls):
+    def getAllUser(cls):
         query = """
-                    MATCH (n:Person) WHERE NOT (n)-[:REVIEWED]->(:Movie)
+                    MATCH (n:Person)
                     return {userId:ID(n)}
                 """
         cls.__session__ = cls.createSession()
-        return cls.__session__.run(query)
+        return setInList(results=cls.__session__.run(query).values(), item="userId")
 
     @classmethod
     def getUserRatingProduct(cls):

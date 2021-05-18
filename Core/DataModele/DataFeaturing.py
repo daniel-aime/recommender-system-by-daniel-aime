@@ -7,15 +7,20 @@ def setInDataFrame(results:list):
         frame["rating"].append(record[0]["rating"])
     return frame
 
-def setInList(results:list):
+def setInList(results:list="movieId", item:str=None):
     """
         Description:
             Fonction qui prend un parametre d'un array dim 1*m
             et qui transforme et retourne une liste
         Parameters:
             results:List
+            item: str
         Return:
          list
 
     """
-    return [i for i,v in enumerate(results.values())]
+    assert isinstance(results, list), "Le parametre results doit etre une liste."
+    data = []
+    for i, v in enumerate(results):
+        data.append(v[0][item])
+    return data
