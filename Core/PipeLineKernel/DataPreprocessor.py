@@ -1,9 +1,8 @@
 import sys
 sys.path.append('..')
 from DataModele.DataSet import ImportDatasetOnNeo4j
-from surprise import Reader as rd
-from surprise import Dataset as dt
-
+import Standardization as sz
+# mrz3x1
 
 import numpy as np
 import pandas as pd
@@ -16,58 +15,72 @@ class DataPreprocessor:
         self.product = DataPreprocessor.__instance_dataset.getAllProduct()
         self.user = DataPreprocessor.__instance_dataset.getAllUser()
 
-
     def get_dataset(self):
         return self.dataset
 
     def set_dataset(self):
         """
-                prod_1 prod_2 prod_3 prod_4 prod_5
-        user_1  1      0      4      0      0
-        user_2  0      0      0      1      0
-        user_3  0      0      6      1      0
-        user_4  0      1      1      0      5
-        user_5  0      4      0      0      1
 
         """
-        movie_unique = np.unique(np.array([self.product]))
+        items_unique = np.unique(np.array([self.product]))
         user_unique = np.unique(np.array([self.user]))
 
         tmp_user = None
-        tmp_matrice = {users:{movies:0 for movies in movie_unique} for users in user_unique}
-        for movie, user, rating in zip(self.user_rating_product['movie_id'],
+        tmp_matrice = {users:{items:0 for items in items_unique} for users in user_unique}
+        for item, user, rating in zip(self.user_rating_product['movie_id'],
                          self.user_rating_product['user_id']
                         , self.user_rating_product['rating']):
                         if user not in tmp_matrice:
-                            tmp_matrice[user] = {movies:0 for movies in movie_unique}
-                        tmp_matrice[user][movie] = rating
+                            tmp_matrice[user] = {items:0 for items in items_unique}
+                        tmp_matrice[user][item] = rating
+
+        return pd.DataFrame([[val_rating for val_rating in val_user.values() ] for val_user in tmp_matrice.values()],
+                                    index=user_unique, columns=items_unique)
+
+    def standardize(self):
         """
-            df = pd.DataFrame([[0, 2, 3], [0, 4, 1], [10, 20, 30]],
-
-                  index=[4, 5, 6], columns=['A', 'B', 'C'])
-            >>output
-                A   B   C
-            4   0   2   3
-            5   0   4   1
-            6  10  20  30
-
+        Calcul ecart du base_predict et remplir le zeros avant
+        Sc = S - Sb
         """
-        movie_rating = pd.DataFrame([[val_rating for val_rating in val_user.values() ] for val_user in tmp_matrice.values()],
-                                    index=user_unique, columns=movie_unique)
+        matrix_user_item = self.set_dataset()
+        matrix_standard = base_predict(matrix_user_item.copy(deep=True))
+        cols = matrix_user_item.columns.values
+        indx = matrix_user_item.index.values
+        std_standard = pd.DataFrame(np.zeros((len(indx),len(cols))),index=indx,columns=cols)
+        for ind in matrix_user_item.index.values:
+            for col in matrix_user_item.columns.values:
+                if matrix_user_item.loc[ind, col] == 0:
+                    continue
+                else:
+                    std_standard.loc[ind, col] = matrix_user_item.loc[ind, col] - matrix_standard.loc[ind, col]
+        return std_standard
 
-        print(movie_rating)
-        # print(self.user_rating_product)
-        # print(tmp_matrice)
+
+    def items_similarity(self, type_correlation="pearson"):
+        """
+        Calcul simulitude a chaque items
+        Args:
+            std_standard (serie.pandas): Matrice normalisé par Sc = S - Sb
+            returns (str): [sum, None]
+            correlation (str): type de correlation utilisé dans le similutide des items
+
+        Returns:
+            items_similarity: DataFrame
+                Dictionnaire qui stock chaque similitude d'items par rapport aux autres items
+        Raises:
+            ValueError: Le type de correlation ne figure pas dans le liste de type pris en charge de la fonction
+        """
+        list_value = ['pearson', 'spearman', 'kendall']
+        if type_correlation not in list_value:
+            raise ValueError(f"Type correlation has not in{list_value}")
+        matrix_standard = self.standardize()
+        return matrix_standard
+
+
+    def ecart_prediction(self):
+        sim, sum = self.items_similarity()
 
 
 
-
-
-        # print(user_rate_movie)
-        # print(movie)
-
-
-    def setInDataFrame(self):
-        print(self.user_rating_product['user_id'].sort())
-test = DataPreprocessor()
-test.set_dataset()
+movie_rating = pd.DataFrame([[0,2,0,1,7],[1,4,0,0,0],[1,0,0,2,0],[3,1,0,0,0]],
+                            index=[1,2,3,4], columns=[1,2,3,4,5])

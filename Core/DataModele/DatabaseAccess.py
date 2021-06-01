@@ -1,5 +1,4 @@
 from neo4j import GraphDatabase
-
 #A design pattern type singleton for access in database
 
 class Database:

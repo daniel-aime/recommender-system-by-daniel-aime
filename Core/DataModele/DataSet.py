@@ -6,7 +6,7 @@ class ImportDatasetOnNeo4j:
     """
         Class singleton qui injecte les données dans le database neo4j
     """
-    connection = Database.getConnection(uri="bolt://localhost:7687", user="test_user", password="root")
+    connection = Database.getConnection(uri="bolt://localhost:11003", user="test_user", password="root")
     __session__ = None
     __instance__ = None
 
