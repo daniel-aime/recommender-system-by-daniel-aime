@@ -37,13 +37,14 @@ class DataPreprocessor:
         return pd.DataFrame([[val_rating for val_rating in val_user.values() ] for val_user in tmp_matrice.values()],
                                     index=user_unique, columns=items_unique)
 
-    def standardize(self):
+    @classmethod
+    def standardize(klass):
         """
         Calcul ecart du base_predict et remplir le zeros avant
         Sc = S - Sb
         """
-        matrix_user_item = self.set_dataset()
-        matrix_standard = base_predict(matrix_user_item.copy(deep=True))
+        matrix_user_item = klass.set_dataset()
+        matrix_standard = sz.base_predict(matrix_user_item.copy(deep=True))
         cols = matrix_user_item.columns.values
         indx = matrix_user_item.index.values
         std_standard = pd.DataFrame(np.zeros((len(indx),len(cols))),index=indx,columns=cols)
@@ -77,10 +78,11 @@ class DataPreprocessor:
         return matrix_standard
 
 
-    def ecart_prediction(self):
-        sim, sum = self.items_similarity()
+        
 
 
 
 movie_rating = pd.DataFrame([[0,2,0,1,7],[1,4,0,0,0],[1,0,0,2,0],[3,1,0,0,0]],
                             index=[1,2,3,4], columns=[1,2,3,4,5])
+test = DataPreprocessor.standardize()
+print(test)

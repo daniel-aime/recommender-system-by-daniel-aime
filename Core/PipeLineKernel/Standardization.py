@@ -114,7 +114,7 @@ def sim_items(std_standard, type_correlation="pearson"):
     return (1 + std_standard.corr(method=type_correlation)) / 2
 
 
-movie_rating = pd.DataFrame([[5,0,0,4],[0,4,3,0],[4,1,2,0]],
-                            index=[1,2,3], columns=[1,2,3,4])
-std_standard = set_standard(movie_rating)
-print(sim_items(std_standard, type_correlation="kendall"))
+# movie_rating = pd.DataFrame([[5,0,0,4],[0,4,3,0],[4,1,2,0]],
+#                             index=[1,2,3], columns=[1,2,3,4])
+# std_standard = set_standard(movie_rating)
+# print(sim_items(std_standard, type_correlation="kendall"))
