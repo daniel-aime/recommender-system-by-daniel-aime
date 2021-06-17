@@ -1,6 +1,8 @@
 
 import pandas as pd
 import numpy as np
+import math as mt
+from itertools import product
 
 
 def mean_rating_users(matrix_user_item):
@@ -92,8 +94,6 @@ def base_predict(matrix_user_item):
             mat_predict.loc[indx, col] = mean_rating + (sim_user_items[i] - mean_rating) + (sim_items_user[c] - mean_rating)
     return mat_predict
 
-
-
 def sim_items(std_standard, type_correlation="pearson"):
     """
     Calcul simulitude a chaque items
@@ -113,8 +113,45 @@ def sim_items(std_standard, type_correlation="pearson"):
 
     return (1 + std_standard.corr(method=type_correlation)) / 2
 
+def sim_users_uk(right_vector, all_user_id, user_id):
+    """
+    u1    1 3
+    u2    2 5
+    u3    3 1
+    u4    4 5
+    """
+    right_singular_vector = pd.DataFrame(right_vector, index=all_user_id)
+    vector_user = list(right_singular_vector.loc[user_id])
+    sim_user_x_to_y = {}
+    for i, value in enumerate(right_singular_vector.index.values):
+        if value != user_id:
+            x_dot_y = 0
+            scalaire_x = 0
+            scalaire_y = 0
+            for values_concept_user, other_value_concept in zip(vector_user, right_singular_vector.loc[value]):
+                x_dot_y  += values_concept_user * other_value_concept
+                scalaire_x += values_concept_user**2
+                scalaire_y += other_value_concept**2
+            sim_user_x_to_y[value] = x_dot_y / (mt.sqrt(scalaire_x) * mt.sqrt(scalaire_y))
+            del x_dot_y, scalaire_x, scalaire_y
+    user_sim = []
+    mean_value = (sum(sim_user_x_to_y.values()) / len(sim_user_x_to_y))
+    for i, v in sim_user_x_to_y.items():
+        if v < mean_value:
+            user_sim.append(i)
+    print(sim_user_x_to_y)
+    return user_sim
 
-# movie_rating = pd.DataFrame([[5,0,0,4],[0,4,3,0],[4,1,2,0]],
+def find_users_rated_items(matrix_user_item, sim_users_uk:dict, item_id):
+    user_item = matrix_user_item.loc[:, item_id]
+    user_item = user_item[user_item.loc[:] != 0]
+    list_user = {2:0.0001, 3:0.01, 4:0.4, 5:0.001}
+    sim = min(sim_users_uk, key=sim_users_uk.get)
+    return sim
+
+
+
+# test = np.array([[5,0,0,4],[0,4,3,0],[4,1,2,0]])
+# movie_rating = pd.DataFrame(test,
 #                             index=[1,2,3], columns=[1,2,3,4])
-# std_standard = set_standard(movie_rating)
-# print(sim_items(std_standard, type_correlation="kendall"))
+# print(find_users_rated_items(movie_rating,3))
