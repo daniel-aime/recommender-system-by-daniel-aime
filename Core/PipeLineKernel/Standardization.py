@@ -120,6 +120,7 @@ def sim_users_uk(right_vector, all_user_id, user_id):
     u3    3 1
     u4    4 5
     """
+    # print(right_vector)
     right_singular_vector = pd.DataFrame(right_vector, index=all_user_id)
     vector_user = list(right_singular_vector.loc[user_id])
     sim_user_x_to_y = {}
@@ -139,7 +140,7 @@ def sim_users_uk(right_vector, all_user_id, user_id):
     for i, v in sim_user_x_to_y.items():
         if v < mean_value:
             user_sim.append(i)
-    print(sim_user_x_to_y)
+    # print(sim_user_x_to_y)
     return user_sim
 
 def find_users_rated_items(matrix_user_item, sim_users_uk:dict, item_id):
