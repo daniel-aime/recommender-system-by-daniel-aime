@@ -6,7 +6,7 @@ Projet  d'étude système de recommendation en utilisant filtrage collaboratif
 Pour un système de recommandation basé sur SVD, voici une stratégie très simple : trouver l'utilisateur le plus similaire à l'aide des matrices bidimensionnelles ci-dessus avec l'un des algorithmes de calcul de similarité et comparer ses éléments à celui du nouvel utilisateur ; prenez les articles que l'utilisateur similaire a évalués et que le nouvel utilisateur n'a pas évalués et retournez-les pour le nouvel utilisateur. De la même manière, pour un nouvel élément, recherchez l'élément le plus similaire à l'aide des matrices bidimensionnelles ci-dessus avec l'un des algorithmes de calcul de similarité et comparez l'élément similaire évalué par les utilisateurs avec le nouvel élément ; prendre les utilisateurs qui notent un article similaire mais pas le nouvel article et renvoyer les notes pour le nouvel article
 - User-based similarité
   Dans la recommandation SVD, afin de décider si deux utilisateurs sont similaires,
-  la matrice réduite Uki est utilisée[1]. Dans la (mxk)Ukmatrix, chaque ligne représente un utilisateur.
+  la matrice réduite Uki est utilisée[1]. Dans la (mxk)Ukmatrice, chaque ligne représente un utilisateur.
   Plus deux lignes sont similaires, plus les utilisateurs se ressemblent. Une étape critique de l'algorithme SVD consiste à calculer la similarité entre les utilisateurs, puis à sélectionner les utilisateurs les plus similaires. Il existe plusieurs façons de calculer la similarité entre les utilisateurs. Voici deux de ces méthodes : la similarité basée sur le cosinus et la comparaison des distances euclidiennes dans l'espace à k dimensions.
 
   - cosinus simularité:
